@@ -9,7 +9,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Search, MessageSquare, Phone } from 'lucide-react';
 import { LoadingView, EmptyView } from '@/components/system/StateViews';
-import { createConversationId } from '@/utils/conversationMeta';
+import { createConversationId, isValidPrincipal } from '@/utils/conversationMeta';
+import { toast } from 'sonner';
 
 export default function DirectoryPage() {
   const navigate = useNavigate();
@@ -19,7 +20,16 @@ export default function DirectoryPage() {
   const addConversation = useAddConversation();
 
   const handleStartChat = async (userPrincipal: string) => {
-    if (!identity) return;
+    if (!identity) {
+      toast.error('Please log in to start a chat');
+      return;
+    }
+
+    if (!userPrincipal || !isValidPrincipal(userPrincipal)) {
+      toast.error('Invalid user principal');
+      console.error('Invalid principal:', userPrincipal);
+      return;
+    }
     
     const currentPrincipal = identity.getPrincipal().toString();
     const conversationId = createConversationId(currentPrincipal, userPrincipal);
@@ -27,12 +37,23 @@ export default function DirectoryPage() {
     try {
       await addConversation.mutateAsync(conversationId);
       navigate({ to: '/chats/$conversationId', params: { conversationId } });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to start chat:', error);
+      
+      // If the conversation already exists, navigate anyway
+      if (error?.message?.includes('already exists') || error?.message?.includes('Unauthorized')) {
+        navigate({ to: '/chats/$conversationId', params: { conversationId } });
+      } else {
+        toast.error('Failed to start chat. Please try again.');
+      }
     }
   };
 
   const handleStartCall = (userPrincipal: string) => {
+    if (!userPrincipal || !isValidPrincipal(userPrincipal)) {
+      toast.error('Invalid user principal');
+      return;
+    }
     navigate({ to: '/calls/active/$callId', params: { callId: `call-${userPrincipal}` } });
   };
 
@@ -46,6 +67,9 @@ export default function DirectoryPage() {
     }
     return username.slice(0, 2).toUpperCase();
   };
+
+  // Filter out users with invalid principals
+  const validUsers = users?.filter(user => user.principal && isValidPrincipal(user.principal)) || [];
 
   return (
     <div className="h-full overflow-auto">
@@ -75,16 +99,16 @@ export default function DirectoryPage() {
           />
         )}
 
-        {!isLoading && searchQuery.trim().length >= 3 && users && users.length === 0 && (
+        {!isLoading && searchQuery.trim().length >= 3 && validUsers.length === 0 && (
           <EmptyView
             title="No users found"
             message="Try a different search term"
           />
         )}
 
-        {!isLoading && users && users.length > 0 && (
+        {!isLoading && validUsers.length > 0 && (
           <div className="grid gap-4 sm:grid-cols-2">
-            {users.map((user) => (
+            {validUsers.map((user) => (
               <Card key={user.username} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-4">
@@ -103,17 +127,16 @@ export default function DirectoryPage() {
                       size="sm"
                       className="flex-1 gap-1"
                       onClick={() => handleStartChat(user.principal)}
-                      disabled={addConversation.isPending || !user.principal}
+                      disabled={addConversation.isPending}
                     >
                       <MessageSquare className="h-3 w-3" />
-                      Chat
+                      {addConversation.isPending ? 'Starting...' : 'Chat'}
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       className="flex-1 gap-1"
                       onClick={() => handleStartCall(user.principal)}
-                      disabled={!user.principal}
                     >
                       <Phone className="h-3 w-3" />
                       Call

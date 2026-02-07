@@ -89,12 +89,10 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface MessageReply {
-    messageId: bigint;
-    timestamp: bigint;
+export interface _CaffeineStorageRefillResult {
+    success?: boolean;
+    topped_up_amount?: bigint;
 }
-export type DisplayName = string;
-export type ConversationId = string;
 export interface CallLogEntry {
     id: bigint;
     duration: bigint;
@@ -104,9 +102,28 @@ export interface CallLogEntry {
     timestamp: bigint;
     fromUser?: Username;
 }
+export interface DirectoryUserResult {
+    principal: Principal;
+    username: Username;
+    displayName: DisplayName;
+}
 export interface _CaffeineStorageRefillInformation {
     proposed_top_up_amount?: bigint;
 }
+export interface _CaffeineStorageCreateCertificateResult {
+    method: string;
+    blob_hash: string;
+}
+export interface MessageRequest {
+    text: string;
+    sender: Principal;
+    conversationId: ConversationId;
+}
+export interface MessageReply {
+    messageId: bigint;
+    timestamp: bigint;
+}
+export type ConversationId = string;
 export interface Message {
     messageId: bigint;
     text: string;
@@ -114,24 +131,12 @@ export interface Message {
     conversationId: ConversationId;
     timestamp: bigint;
 }
-export interface _CaffeineStorageCreateCertificateResult {
-    method: string;
-    blob_hash: string;
-}
 export type Username = string;
-export interface MessageRequest {
-    text: string;
-    sender: Principal;
-    conversationId: ConversationId;
-}
 export interface UserProfile {
     username: Username;
     displayName: DisplayName;
 }
-export interface _CaffeineStorageRefillResult {
-    success?: boolean;
-    topped_up_amount?: bigint;
-}
+export type DisplayName = string;
 export enum CallType {
     stream = "stream",
     audio = "audio",
@@ -166,6 +171,7 @@ export interface backendInterface {
     recordCall(fromUser: Username | null, toUser: Username | null, callType: CallType, duration: bigint, notes: string): Promise<void>;
     removeConversation(conversationId: ConversationId): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    searchDirectoryUsers(searchText: string): Promise<Array<DirectoryUserResult>>;
     searchUsers(searchText: string): Promise<Array<UserProfile>>;
     sendMessage(request: MessageRequest): Promise<MessageReply>;
     updateProfile(username: string | null, displayName: string | null): Promise<void>;
@@ -492,6 +498,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.saveCallerUserProfile(arg0);
+            return result;
+        }
+    }
+    async searchDirectoryUsers(arg0: string): Promise<Array<DirectoryUserResult>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.searchDirectoryUsers(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.searchDirectoryUsers(arg0);
             return result;
         }
     }

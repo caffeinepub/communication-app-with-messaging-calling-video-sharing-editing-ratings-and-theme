@@ -28,6 +28,12 @@ actor {
     displayName : DisplayName;
   };
 
+  public type DirectoryUserResult = {
+    username : Username;
+    displayName : DisplayName;
+    principal : Principal;
+  };
+
   // Types for call logs
   public type CallLogEntry = {
     id : Nat;
@@ -105,7 +111,31 @@ actor {
     userProfiles.get(principal);
   };
 
-  // Search users (public for finding chat partners)
+  // Profile search for Directory (includes principal)
+  public query func searchDirectoryUsers(searchText : Text) : async [DirectoryUserResult] {
+    if (searchText.size() < 3) {
+      Runtime.trap("Search term must be at least 3 characters");
+    };
+
+    let results = userProfiles.toArray().filter(
+      func((p, profile)) {
+        profile.username.contains(#text(searchText)) or
+        profile.displayName.contains(#text(searchText));
+      }
+    );
+
+    results.map(
+      func((p, profile)) {
+        {
+          username = profile.username;
+          displayName = profile.displayName;
+          principal = p;
+        };
+      }
+    );
+  };
+
+  // Deprecated search (legacy, returns only usernames)
   public query func searchUsers(searchText : Text) : async [UserProfile] {
     if (searchText.size() < 3) {
       Runtime.trap("Search term must be at least 3 characters");
@@ -437,3 +467,4 @@ actor {
     };
   };
 };
+

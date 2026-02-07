@@ -1,95 +1,53 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Chat thread: real messages, correct sender labels, and expected scrolling",
+  "title": "Fix Directory chat initiation by using backend principals and robust navigation/error handling",
   "requirements": [
     {
-      "id": "REQ-21",
-      "summary": "Remove mock/seeded thread messages and render only real canister-backed messages, showing an empty state when none exist.",
+      "id": "REQ-25",
+      "summary": "Make the Directory Chat button reliably create/reuse the 1:1 conversation and navigate into the chat thread with clear error feedback.",
       "acceptanceCriteria": [
-        "Opening any chat thread with no prior messages shows an empty state (no prefilled sample messages).",
-        "Refreshing the page does not recreate any mock/sample messages in the thread.",
-        "Messages returned are exactly those that were sent in that conversation (no additional seeded/demo content)."
+        "On the Directory page, search results provide a valid target principal value for each user, so the Chat button is not disabled due to missing principal data.",
+        "Clicking Chat on a Directory search result calls the backend to add the derived conversationId (from current user principal + target principal) and then navigates to /chats/$conversationId.",
+        "If the conversation already exists, clicking Chat still navigates to the existing thread without error.",
+        "If starting the chat fails, the user sees a clear error toast/message in English (and the app does not silently fail)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useThreadMessages.ts",
+          "path": "frontend/src/pages/DirectoryPage.tsx",
           "operation": "modify",
-          "description": "Replace the hardcoded mock message array with a canister-backed fetch using the actor’s message-listing capability for the given conversationId; map returned messages into the UI-friendly shape and return an empty array when there are no messages."
+          "description": "Harden the chat initiation flow: validate the target principal before enabling Chat; when Chat is clicked, derive the conversationId from current principal + target principal, attempt to add the conversation, and navigate to /chats/$conversationId. If adding fails, attempt a safe fallback (e.g., confirm the conversation exists) and still navigate when appropriate; otherwise show a clear English toast/message instead of silently failing."
         },
         {
-          "path": "frontend/src/pages/ChatThreadPage.tsx",
+          "path": "frontend/src/hooks/useAddConversation.ts",
           "operation": "modify",
-          "description": "Add an empty-state render path for threads with zero messages (use the existing EmptyView from StateViews) so the UI never displays seeded content when the conversation is empty."
+          "description": "Ensure add-conversation failures produce a clear, user-visible English toast/message and propagate enough error context for DirectoryPage to decide whether it can still navigate to an existing thread."
         }
       ]
     },
     {
-      "id": "REQ-22",
-      "summary": "Use the actual other participant’s username/display name for incoming message sender labels (no hardcoded “Alice”), consistent with the thread header.",
+      "id": "REQ-27",
+      "summary": "Update the user search hook and Directory page to use backend-provided principals and avoid broken navigation when principal data is missing.",
       "acceptanceCriteria": [
-        "For a 1:1 thread, the label above non-current-user messages matches the actual other participant (their username/handle as used elsewhere in the app), not a hardcoded value.",
-        "The current user’s messages do not display the other participant’s name above them.",
-        "The header participant label and the per-message sender label are consistent for the other participant."
+        "frontend/src/hooks/useUserSearch.ts no longer returns principal: '' for results; it maps principal from the backend response.",
+        "frontend/src/pages/DirectoryPage.tsx uses the principal from search results when building the conversationId and when enabling/disabling the Chat button.",
+        "Directory search results no longer show users with missing principal; if a result lacks a principal unexpectedly, the Chat button remains disabled and an error is logged (or surfaced) rather than navigating to a broken route."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/ChatThreadPage.tsx",
+          "path": "frontend/src/hooks/useUserSearch.ts",
           "operation": "modify",
-          "description": "Derive the other participant identity from the conversationId (via conversationMeta) and profile data (via actor-backed profile fetch), then pass a single, consistent display label to both the thread header and the message list for incoming-message labeling."
+          "description": "Switch the hook to use the backend directory search capability that returns principals, and map the returned principal into the hook result type (as a string). Remove the workaround that returns an empty principal and keep the existing minimum search length rule (>= 3 characters)."
         },
         {
-          "path": "frontend/src/components/chat/MessageList.tsx",
+          "path": "frontend/src/pages/DirectoryPage.tsx",
           "operation": "modify",
-          "description": "Remove any reliance on mock sender handles; determine current-user vs other-user using the authenticated principal (from the existing auth hook) and render the per-message sender label for non-current-user messages using the derived other-participant label passed from the thread page."
+          "description": "Consume the updated useUserSearch results and ensure results without a valid principal are not shown; if a missing/invalid principal is encountered unexpectedly, keep Chat disabled and log/surface an error instead of navigating to a broken /chats route."
         },
         {
           "path": "frontend/src/utils/conversationMeta.ts",
           "operation": "modify",
-          "description": "Extend helpers to better support deriving a stable other-participant identifier from a conversationId (username vs principal text) so the UI can resolve a correct display label without hardcoded names."
-        }
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "summary": "Make the thread message area scrollable and implement near-bottom auto-scroll behavior without yanking users who scrolled up.",
-      "acceptanceCriteria": [
-        "Users can scroll up/down through the message history in the conversation view using mouse wheel/trackpad and by dragging the scrollbar.",
-        "When new messages arrive and the user is at (or near) the bottom, the view auto-scrolls to the latest message.",
-        "When the user scrolls up (not near the bottom), new incoming messages do not yank the scroll position back to the bottom."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/ChatThreadPage.tsx",
-          "operation": "modify",
-          "description": "Replace/refactor the message container to use a reliable scrollable element (e.g., a flex child with overflow-y-auto) and implement scroll position tracking to detect “near bottom”; on message updates, auto-scroll only when near-bottom and preserve the user’s position when they’ve scrolled up."
-        }
-      ]
-    },
-    {
-      "id": "REQ-24",
-      "summary": "Update frontend message send/fetch hooks to use persistent canister-backed 1:1 messages with polling and auth-aware behavior.",
-      "acceptanceCriteria": [
-        "Sending a text message persists it in the canister and it appears after reload.",
-        "Fetching messages for a conversation returns a stable, chronological message history for that conversation.",
-        "Only authenticated users can send messages, and users can only read messages for conversations they are a participant of (unauthorized access is rejected).",
-        "Frontend polling updates the thread without using WebSockets."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useSendMessage.ts",
-          "operation": "modify",
-          "description": "Replace the mock send implementation with a canister-backed send using the actor’s message-sending capability; require an authenticated identity, submit the message for the current conversation, and invalidate relevant react-query caches (thread + conversation list) on success while surfacing authorization failures as user-friendly errors."
-        },
-        {
-          "path": "frontend/src/hooks/useThreadMessages.ts",
-          "operation": "modify",
-          "description": "Ensure message polling remains enabled (no WebSockets) while using the canister-backed list capability; handle unauthorized errors gracefully (e.g., return an error state or empty state as appropriate) and ensure results are displayed chronologically and remain stable across reloads."
-        },
-        {
-          "path": "frontend/src/hooks/useConversations.ts",
-          "operation": "modify",
-          "description": "Optionally enhance conversation rows to use real last-message previews by reusing canister-backed message listing (lightweight/guarded to avoid excessive calls) so the UI reflects the latest persisted messages rather than placeholders."
+          "description": "Reuse/extend existing principal validation utilities (e.g., isValidPrincipal) as needed by DirectoryPage to reliably enable/disable Chat and prevent invalid conversationId generation."
         }
       ]
     }

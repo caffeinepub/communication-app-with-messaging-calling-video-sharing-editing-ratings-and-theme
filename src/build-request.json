@@ -1,91 +1,73 @@
 {
   "kind": "build_request",
-  "title": "Fix chat thread sender name, enable scrolling, and remove phantom/mock messages",
-  "priority": "normal",
+  "title": "Fix non-working Chat button when starting a conversation from Directory",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-21",
-      "text": "Replace the chat thread’s mock message list with real canister-backed messages so the thread never shows hardcoded/phantom messages (e.g., the sample messages from “@alice”). If there are no messages for a conversation, show an empty state instead of seeded content.",
+      "id": "REQ-25",
+      "text": "Fix starting a new chat from the Directory so the Chat button successfully creates (or reuses) the 1:1 conversation and navigates into the chat thread.",
       "target": "both",
       "source": {
         "messageIds": [
-          "recent-messages-6"
+          "recent-messages"
         ],
         "quotes": [
-          "and also, it always shows messages that we never sent, so please erase those"
+          "when I try to chat with someone, the chat button doesn't work, so please fix that"
         ]
       },
       "acceptanceCriteria": [
-        "Opening any chat thread with no prior messages shows an empty state (no prefilled sample messages).",
-        "Refreshing the page does not recreate any mock/sample messages in the thread.",
-        "Messages returned are exactly those that were sent in that conversation (no additional seeded/demo content)."
+        "On the Directory page, search results provide a valid target principal value for each user, so the Chat button is not disabled due to missing principal data.",
+        "Clicking Chat on a Directory search result calls the backend to add the derived conversationId (from current user principal + target principal) and then navigates to /chats/$conversationId.",
+        "If the conversation already exists, clicking Chat still navigates to the existing thread without error.",
+        "If starting the chat fails, the user sees a clear error toast/message in English (and the app does not silently fail)."
       ]
     },
     {
-      "id": "REQ-22",
-      "text": "Fix the sender name shown above incoming messages in a chat thread so it uses the actual other participant’s username/display name (derived from the conversation + profile data) and never shows a hardcoded name like “Alice”.",
+      "id": "REQ-26",
+      "text": "Update the backend user search API so search results include the user Principal along with username and displayName, eliminating the current frontend workaround that returns an empty principal.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "the chat button doesn't work"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The backend exposes a query search API used by the frontend that returns entries containing: principal (as text or Principal), username, and displayName for each matched user profile.",
+        "Directory search continues to enforce the existing minimum search length rule (>= 3 characters) and returns matches by username or displayName.",
+        "No existing canister state is lost; this change is additive and does not require a data migration."
+      ]
+    },
+    {
+      "id": "REQ-27",
+      "text": "Update the frontend user search hook and Directory page to use the backend-provided principal in search results so the Chat button works reliably.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages-6"
+          "recent-messages"
         ],
         "quotes": [
-          "whenever I try to chat with someone, it shows their real name at the top, but above their messages, it says their name is \"Alice\". so please fix that."
+          "the chat button doesn't work"
         ]
       },
       "acceptanceCriteria": [
-        "For a 1:1 thread, the label above non-current-user messages matches the actual other participant (their username/handle as used elsewhere in the app), not a hardcoded value.",
-        "The current user’s messages do not display the other participant’s name above them.",
-        "The header participant label and the per-message sender label are consistent for the other participant."
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "text": "Make the chat thread message area scrollable up and down, and keep expected chat behavior: auto-scroll to the bottom when the user is already near the bottom and a new message arrives, but do not force-scroll if the user has manually scrolled up to read older messages.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "recent-messages-6"
-        ],
-        "quotes": [
-          "and I cant scroll either, so make it so I can scroll up and down."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Users can scroll up/down through the message history in the conversation view using mouse wheel/trackpad and by dragging the scrollbar.",
-        "When new messages arrive and the user is at (or near) the bottom, the view auto-scrolls to the latest message.",
-        "When the user scrolls up (not near the bottom), new incoming messages do not yank the scroll position back to the bottom."
-      ]
-    },
-    {
-      "id": "REQ-24",
-      "text": "Add/extend backend canister APIs and storage to support persistent 1:1 conversation messages (send + list by conversation), keyed so only conversation participants can read/write, and update the frontend message send/fetch hooks to use these APIs (polling is fine; no WebSockets).",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "recent-messages-6"
-        ],
-        "quotes": [
-          "whenever I try to chat with someone...",
-          "it always shows messages that we never sent, so please erase those"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Sending a text message persists it in the canister and it appears after reload.",
-        "Fetching messages for a conversation returns a stable, chronological message history for that conversation.",
-        "Only authenticated users can send messages, and users can only read messages for conversations they are a participant of (unauthorized access is rejected).",
-        "Frontend polling updates the thread without using WebSockets."
+        "frontend/src/hooks/useUserSearch.ts no longer returns principal: '' for results; it maps principal from the backend response.",
+        "frontend/src/pages/DirectoryPage.tsx uses the principal from search results when building the conversationId and when enabling/disabling the Chat button.",
+        "Directory search results no longer show users with missing principal; if a result lacks a principal unexpectedly, the Chat button remains disabled and an error is logged (or surfaced) rather than navigating to a broken route."
       ]
     }
   ],
   "constraints": [
-    "Do not edit any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui (compose these components instead).",
-    "Backend must remain a single Motoko actor (all logic in backend/main.mo); only create/modify backend/migration.mo if existing stable state requires migration."
+    "Backend must remain a single Motoko actor with logic in backend/main.mo (no additional backend services).",
+    "Do not edit files under frontend/src/components/ui or any frontend immutablePaths listed in SYSTEM_CONTEXT.",
+    "Use English for any user-facing text."
   ],
   "nonGoals": [
-    "Do not add WebSockets or real-time push; continue using polling-based updates.",
-    "Do not introduce third-party auth providers; Internet Identity remains the only authentication method.",
-    "Do not implement group chats or multi-participant threads as part of this fix."
+    "Implementing real-time updates via WebSockets.",
+    "Adding new chat features beyond fixing the broken chat initiation flow (e.g., group chats, read receipts).",
+    "Third-party authentication providers (only Internet Identity is supported)."
   ],
   "imageRequirements": {
     "required": [],

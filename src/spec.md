@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the chat thread view to show only real, persisted messages with correct sender names, and make the message history scrollable with expected auto-scroll behavior.
+**Goal:** Fix the broken “Chat” button flow when starting a 1:1 conversation from the Directory so it reliably opens (or creates) the correct chat thread.
 
 **Planned changes:**
-- Replace any hardcoded/mock chat thread messages with canister-backed message fetching; show an empty state when a conversation has no messages.
-- Fix per-message sender labeling so incoming messages display the actual other participant’s username/handle (consistent with the thread header), and do not show a hardcoded name (e.g., “Alice”).
-- Make the message list area scrollable and implement “auto-scroll only when near bottom” behavior for newly arriving messages.
-- Add/extend backend canister storage and APIs to persist and list 1:1 conversation messages (send + list by conversation) with access restricted to conversation participants; update frontend send/fetch logic to use polling (no WebSockets).
+- Update the backend Directory/user search API to include each matched user’s principal along with username and displayName (while keeping the existing minimum search length rule).
+- Update the frontend user search hook to map and return the backend-provided principal (removing the empty-principal workaround).
+- Update the Directory page Chat button behavior to use the result principal to derive/reuse the conversationId, call the backend as needed, and navigate to `/chats/$conversationId`.
+- Add clear English error feedback (toast/message) when chat initiation fails instead of silently failing; avoid navigating when principal is missing.
 
-**User-visible outcome:** Chat threads display only the real message history for that conversation (or an empty state if none), incoming messages show the correct sender name, and users can scroll through messages without being forced to the bottom unless they’re already near it.
+**User-visible outcome:** From the Directory search results, users can click “Chat” and reliably land in the correct 1:1 chat thread (existing or newly created), with a clear error message if something goes wrong.

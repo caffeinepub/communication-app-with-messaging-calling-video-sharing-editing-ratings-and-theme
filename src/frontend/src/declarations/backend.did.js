@@ -52,6 +52,11 @@ export const Message = IDL.Record({
   'conversationId' : ConversationId,
   'timestamp' : IDL.Int,
 });
+export const DirectoryUserResult = IDL.Record({
+  'principal' : IDL.Principal,
+  'username' : Username,
+  'displayName' : DisplayName,
+});
 export const MessageRequest = IDL.Record({
   'text' : IDL.Text,
   'sender' : IDL.Principal,
@@ -114,6 +119,11 @@ export const idlService = IDL.Service({
     ),
   'removeConversation' : IDL.Func([ConversationId], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'searchDirectoryUsers' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(DirectoryUserResult)],
+      ['query'],
+    ),
   'searchUsers' : IDL.Func([IDL.Text], [IDL.Vec(UserProfile)], ['query']),
   'sendMessage' : IDL.Func([MessageRequest], [MessageReply], []),
   'updateProfile' : IDL.Func([IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)], [], []),
@@ -165,6 +175,11 @@ export const idlFactory = ({ IDL }) => {
     'sender' : IDL.Principal,
     'conversationId' : ConversationId,
     'timestamp' : IDL.Int,
+  });
+  const DirectoryUserResult = IDL.Record({
+    'principal' : IDL.Principal,
+    'username' : Username,
+    'displayName' : DisplayName,
   });
   const MessageRequest = IDL.Record({
     'text' : IDL.Text,
@@ -228,6 +243,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'removeConversation' : IDL.Func([ConversationId], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'searchDirectoryUsers' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(DirectoryUserResult)],
+        ['query'],
+      ),
     'searchUsers' : IDL.Func([IDL.Text], [IDL.Vec(UserProfile)], ['query']),
     'sendMessage' : IDL.Func([MessageRequest], [MessageReply], []),
     'updateProfile' : IDL.Func([IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)], [], []),

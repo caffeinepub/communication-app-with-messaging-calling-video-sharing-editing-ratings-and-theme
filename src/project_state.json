@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
+  "projectStateVersion": 13,
   "summary": "Build a communications app with messaging and voice/video calling, in-app video creation/editing and sharing, star-based video ratings (0.5–5), and a customizable themed menu.",
   "architectural_notes": [],
   "known_issues": [
@@ -8,7 +8,8 @@
     "Call history shows calls the user did not make; user requests ability to erase them (call log accuracy/persistence issue).",
     "Conversation thread shows inconsistent participant name: header shows real name but message area label shows hardcoded \"Alice\".",
     "Chat thread is not scrollable (cannot scroll up/down in conversation view).",
-    "Chat thread shows messages that were never sent (phantom/mock messages not cleared)."
+    "Chat thread shows messages that were never sent (phantom/mock messages not cleared).",
+    "Chat button does not work when trying to start a chat with someone (cannot initiate chat)."
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -179,6 +180,22 @@
         "REQ-24"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-fix-starting-a-new-chat-from-the-directory-so-the-chat-button-successfully-creates-or-reuses-the-1-1-conversation-and-navigates-into-the-chat-thread",
+      "title": "Fix starting a new chat from the Directory so the Chat button successfully creates (or reuses) the 1:1 conversation and navigates into the chat thread.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-frontend-user-search-hook-and-directory-page-to-use-the-backend-provided-principal-in-search-results-so-the-chat-button-works-reliably",
+      "title": "Update the frontend user search hook and Directory page to use the backend-provided principal in search results so the Chat button works reliably.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -264,6 +281,14 @@
       "id": "AR-14",
       "summary": "Expand theme customization by adding more theme color options/curated themes",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Update the backend user search API so search results include the user Principal along with username and displayName, eliminating the current frontend workaround that returns an empty principal.",
+      "reqIds": [
+        "REQ-26"
+      ],
       "status": "pending"
     }
   ],

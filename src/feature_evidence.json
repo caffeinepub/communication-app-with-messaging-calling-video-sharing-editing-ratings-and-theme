@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-replace-the-chat-thread-s-mock-message-list-with-real-canister-backed-messages-so-the-thread-never-shows-hardcoded-phantom-messages-e-g-the-sample-messages-from-alice-if-there-are-no-messages-for-a-conversation-show-an-empty-state-instead-of-seeded-content",
-      "featureTitle": "Replace the chat thread’s mock message list with real canister-backed messages so the thread never shows hardcoded/phantom messages (e.g., the sample messages from “@alice”). If there are no messages for a conversation, show an empty state instead of seeded content.",
+      "featureId": "feature-fix-starting-a-new-chat-from-the-directory-so-the-chat-button-successfully-creates-or-reuses-the-1-1-conversation-and-navigates-into-the-chat-thread",
+      "featureTitle": "Fix starting a new chat from the Directory so the Chat button successfully creates (or reuses) the 1:1 conversation and navigates into the chat thread.",
       "files": [
-        "frontend/src/hooks/useThreadMessages.ts",
-        "frontend/src/pages/ChatThreadPage.tsx"
+        "frontend/src/hooks/useAddConversation.ts",
+        "frontend/src/pages/DirectoryPage.tsx"
       ],
       "components": [
         "blob-storage@4.0.0",
@@ -19,17 +19,16 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-21"
+        "REQ-25"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-fix-the-sender-name-shown-above-incoming-messages-in-a-chat-thread-so-it-uses-the-actual-other-participant-s-username-display-name-derived-from-the-conversation-profile-data-and-never-shows-a-hardcoded-name-like-alice",
-      "featureTitle": "Fix the sender name shown above incoming messages in a chat thread so it uses the actual other participant’s username/display name (derived from the conversation + profile data) and never shows a hardcoded name like “Alice”.",
+      "featureId": "feature-update-the-frontend-user-search-hook-and-directory-page-to-use-the-backend-provided-principal-in-search-results-so-the-chat-button-works-reliably",
+      "featureTitle": "Update the frontend user search hook and Directory page to use the backend-provided principal in search results so the Chat button works reliably.",
       "files": [
-        "frontend/src/components/chat/MessageList.tsx",
-        "frontend/src/pages/ChatThreadPage.tsx",
-        "frontend/src/utils/conversationMeta.ts"
+        "frontend/src/hooks/useUserSearch.ts",
+        "frontend/src/pages/DirectoryPage.tsx"
       ],
       "components": [
         "blob-storage@4.0.0",
@@ -42,50 +41,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-22"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-make-the-chat-thread-message-area-scrollable-up-and-down-and-keep-expected-chat-behavior-auto-scroll-to-the-bottom-when-the-user-is-already-near-the-bottom-and-a-new-message-arrives-but-do-not-force-scroll-if-the-user-has-manually-scrolled-up-to-read-older-messages",
-      "featureTitle": "Make the chat thread message area scrollable up and down, and keep expected chat behavior: auto-scroll to the bottom when the user is already near the bottom and a new message arrives, but do not force-scroll if the user has manually scrolled up to read older messages.",
-      "files": [
-        "frontend/src/pages/ChatThreadPage.tsx"
-      ],
-      "components": [
-        "blob-storage@4.0.0",
-        "camera@1.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-23"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-extend-backend-canister-apis-and-storage-to-support-persistent-1-1-conversation-messages-send-list-by-conversation-keyed-so-only-conversation-participants-can-read-write-and-update-the-frontend-message-send-fetch-hooks-to-use-these-apis-polling-is-fine-no-websockets",
-      "featureTitle": "Add/extend backend canister APIs and storage to support persistent 1:1 conversation messages (send + list by conversation), keyed so only conversation participants can read/write, and update the frontend message send/fetch hooks to use these APIs (polling is fine; no WebSockets).",
-      "files": [
-        "frontend/src/hooks/useSendMessage.ts",
-        "frontend/src/hooks/useThreadMessages.ts"
-      ],
-      "components": [
-        "blob-storage@4.0.0",
-        "camera@1.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-24"
+        "REQ-27"
       ],
       "confidence": "high"
     }

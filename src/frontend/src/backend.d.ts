@@ -7,12 +7,6 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface MessageReply {
-    messageId: bigint;
-    timestamp: bigint;
-}
-export type DisplayName = string;
-export type ConversationId = string;
 export interface CallLogEntry {
     id: bigint;
     duration: bigint;
@@ -22,6 +16,21 @@ export interface CallLogEntry {
     timestamp: bigint;
     fromUser?: Username;
 }
+export interface DirectoryUserResult {
+    principal: Principal;
+    username: Username;
+    displayName: DisplayName;
+}
+export interface MessageRequest {
+    text: string;
+    sender: Principal;
+    conversationId: ConversationId;
+}
+export interface MessageReply {
+    messageId: bigint;
+    timestamp: bigint;
+}
+export type ConversationId = string;
 export interface Message {
     messageId: bigint;
     text: string;
@@ -30,15 +39,11 @@ export interface Message {
     timestamp: bigint;
 }
 export type Username = string;
-export interface MessageRequest {
-    text: string;
-    sender: Principal;
-    conversationId: ConversationId;
-}
 export interface UserProfile {
     username: Username;
     displayName: DisplayName;
 }
+export type DisplayName = string;
 export enum CallType {
     stream = "stream",
     audio = "audio",
@@ -66,6 +71,7 @@ export interface backendInterface {
     recordCall(fromUser: Username | null, toUser: Username | null, callType: CallType, duration: bigint, notes: string): Promise<void>;
     removeConversation(conversationId: ConversationId): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    searchDirectoryUsers(searchText: string): Promise<Array<DirectoryUserResult>>;
     searchUsers(searchText: string): Promise<Array<UserProfile>>;
     sendMessage(request: MessageRequest): Promise<MessageReply>;
     updateProfile(username: string | null, displayName: string | null): Promise<void>;

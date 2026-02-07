@@ -23,6 +23,11 @@ export type CallType = { 'stream' : null } |
   { 'audio' : null } |
   { 'webcam' : null };
 export type ConversationId = string;
+export interface DirectoryUserResult {
+  'principal' : Principal,
+  'username' : Username,
+  'displayName' : DisplayName,
+}
 export type DisplayName = string;
 export interface Message {
   'messageId' : bigint,
@@ -92,6 +97,7 @@ export interface _SERVICE {
   >,
   'removeConversation' : ActorMethod<[ConversationId], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'searchDirectoryUsers' : ActorMethod<[string], Array<DirectoryUserResult>>,
   'searchUsers' : ActorMethod<[string], Array<UserProfile>>,
   'sendMessage' : ActorMethod<[MessageRequest], MessageReply>,
   'updateProfile' : ActorMethod<[[] | [string], [] | [string]], undefined>,
