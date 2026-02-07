@@ -1,0 +1,104 @@
+{
+  "kind": "build_request",
+  "title": "Fix chat thread sender name, enable scrolling, and remove phantom/mock messages",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-21",
+      "text": "Replace the chat thread’s mock message list with real canister-backed messages so the thread never shows hardcoded/phantom messages (e.g., the sample messages from “@alice”). If there are no messages for a conversation, show an empty state instead of seeded content.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "recent-messages-6"
+        ],
+        "quotes": [
+          "and also, it always shows messages that we never sent, so please erase those"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Opening any chat thread with no prior messages shows an empty state (no prefilled sample messages).",
+        "Refreshing the page does not recreate any mock/sample messages in the thread.",
+        "Messages returned are exactly those that were sent in that conversation (no additional seeded/demo content)."
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "text": "Fix the sender name shown above incoming messages in a chat thread so it uses the actual other participant’s username/display name (derived from the conversation + profile data) and never shows a hardcoded name like “Alice”.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-6"
+        ],
+        "quotes": [
+          "whenever I try to chat with someone, it shows their real name at the top, but above their messages, it says their name is \"Alice\". so please fix that."
+        ]
+      },
+      "acceptanceCriteria": [
+        "For a 1:1 thread, the label above non-current-user messages matches the actual other participant (their username/handle as used elsewhere in the app), not a hardcoded value.",
+        "The current user’s messages do not display the other participant’s name above them.",
+        "The header participant label and the per-message sender label are consistent for the other participant."
+      ]
+    },
+    {
+      "id": "REQ-23",
+      "text": "Make the chat thread message area scrollable up and down, and keep expected chat behavior: auto-scroll to the bottom when the user is already near the bottom and a new message arrives, but do not force-scroll if the user has manually scrolled up to read older messages.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-6"
+        ],
+        "quotes": [
+          "and I cant scroll either, so make it so I can scroll up and down."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users can scroll up/down through the message history in the conversation view using mouse wheel/trackpad and by dragging the scrollbar.",
+        "When new messages arrive and the user is at (or near) the bottom, the view auto-scrolls to the latest message.",
+        "When the user scrolls up (not near the bottom), new incoming messages do not yank the scroll position back to the bottom."
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "text": "Add/extend backend canister APIs and storage to support persistent 1:1 conversation messages (send + list by conversation), keyed so only conversation participants can read/write, and update the frontend message send/fetch hooks to use these APIs (polling is fine; no WebSockets).",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "recent-messages-6"
+        ],
+        "quotes": [
+          "whenever I try to chat with someone...",
+          "it always shows messages that we never sent, so please erase those"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Sending a text message persists it in the canister and it appears after reload.",
+        "Fetching messages for a conversation returns a stable, chronological message history for that conversation.",
+        "Only authenticated users can send messages, and users can only read messages for conversations they are a participant of (unauthorized access is rejected).",
+        "Frontend polling updates the thread without using WebSockets."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not edit any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui (compose these components instead).",
+    "Backend must remain a single Motoko actor (all logic in backend/main.mo); only create/modify backend/migration.mo if existing stable state requires migration."
+  ],
+  "nonGoals": [
+    "Do not add WebSockets or real-time push; continue using polling-based updates.",
+    "Do not introduce third-party auth providers; Internet Identity remains the only authentication method.",
+    "Do not implement group chats or multi-participant threads as part of this fix."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

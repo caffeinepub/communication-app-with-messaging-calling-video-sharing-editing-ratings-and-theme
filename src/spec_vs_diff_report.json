@@ -1,0 +1,49 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-07T04:04:23.878Z",
+  "summary": "Frontend changes largely replace mock thread content with polled canister messages, fix incoming sender labeling using the other participant’s profile, and add a scrollable thread container with near-bottom auto-scroll. Backend changes introduce message-related types/storage, but the diff is truncated before showing the actual send/list APIs and any participant-based authorization checks, so full REQ-24 compliance can’t be confirmed from the provided evidence.",
+  "missing_requirements": [
+    {
+      "id": "REQ-21",
+      "requirement": "If there are no messages for a conversation, show an empty state instead of seeded content.",
+      "reason": "ChatThreadPage is truncated at the point where the messages/empty-state rendering would be shown, so the empty-state behavior cannot be verified from the diff summary.",
+      "evidence": [
+        "frontend/src/pages/ChatThreadPage.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "requirement": "Add/extend backend canister APIs and storage to support persistent 1:1 conversation messages (send + list by conversation), keyed so only conversation participants can read/write (unauthorized access rejected).",
+      "reason": "backend/main.mo is truncated before showing implementations of `sendMessage` / `listMessages` and any logic enforcing that only conversation participants can read/write. The frontend calls `actor.sendMessage` and `actor.listMessages`, but the backend-side authorization and participant checks are not visible in the provided snippet.",
+      "evidence": [
+        "backend/main.mo (truncated)",
+        "frontend/src/hooks/useSendMessage.ts",
+        "frontend/src/hooks/useThreadMessages.ts"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "User search hook returns profiles with an empty `principal` field and includes commentary/workaround logic about backend limitations.",
+      "reason": "The BuildRequest is focused on chat thread sender names, scrolling behavior, removing mock messages, and persistent canister-backed thread messages. Changing search results to omit principals (or adding a workaround structure that still yields empty principals) is not requested as part of REQ-21–REQ-24.",
+      "evidence": [
+        "frontend/src/hooks/useUserSearch.ts"
+      ]
+    }
+  ],
+  "confidence": 0.62,
+  "changed_files": [
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/components/chat/MessageList.tsx",
+    "frontend/src/hooks/useSendMessage.ts",
+    "frontend/src/hooks/useThreadMessages.ts",
+    "frontend/src/hooks/useUserSearch.ts",
+    "frontend/src/pages/ChatThreadPage.tsx",
+    "frontend/src/pages/DirectoryPage.tsx",
+    "frontend/src/pages/UserProfilePage.tsx",
+    "frontend/src/utils/conversationMeta.ts",
+    "project_state.json"
+  ]
+}

@@ -1,2 +1,3 @@
-# communication-app-with-messaging-calling-video-sharing-editing-ratings-and-theme
-Exported from Caffeine project: Communication app with messaging, calling, video sharing/editing, ratings, and theme customization
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

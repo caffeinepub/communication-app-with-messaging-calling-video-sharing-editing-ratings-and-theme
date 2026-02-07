@@ -1,0 +1,274 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 11,
+  "summary": "Build a communications app with messaging and voice/video calling, in-app video creation/editing and sharing, star-based video ratings (0.5–5), and a customizable themed menu.",
+  "architectural_notes": [],
+  "known_issues": [
+    "Chat removal request not taking effect: chats the user never started are still showing after attempting to remove them.",
+    "Call history shows calls the user did not make; user requests ability to erase them (call log accuracy/persistence issue).",
+    "Conversation thread shows inconsistent participant name: header shows real name but message area label shows hardcoded \"Alice\".",
+    "Chat thread is not scrollable (cannot scroll up/down in conversation view).",
+    "Chat thread shows messages that were never sent (phantom/mock messages not cleared)."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-add-internet-identity-authentication-and-an-in-app-user-directory-so-people-can-find-other-users-by-a-human-readable-handle-unique-username-and-start-interactions-with-them",
+      "title": "Add Internet Identity authentication and an in-app user directory so people can find other users by a human-readable handle (unique username) and start interactions with them.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-1-1-messaging-with-conversation-threads-including-sending-receiving-messages-message-history-and-polling-based-updates-no-websockets",
+      "title": "Implement 1:1 messaging with conversation threads, including sending/receiving messages, message history, and polling-based updates (no WebSockets).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-peer-to-peer-voice-video-calling-between-two-users-using-webrtc-with-call-invitation-accept-decline-and-call-state-stored-in-the-canister-as-signaling-data-and-updated-via-polling-no-websockets",
+      "title": "Implement peer-to-peer voice/video calling between two users using WebRTC, with call invitation/accept/decline and call state stored in the canister as signaling data and updated via polling (no WebSockets).",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-in-browser-video-creation-and-basic-editing-tools-record-from-camera-mic-upload-an-existing-video-trim-start-end-and-export-a-new-video-file-suitable-for-sharing-in-the-app",
+      "title": "Add in-browser video creation and basic editing tools: record from camera/mic, upload an existing video, trim start/end, and export a new video file suitable for sharing in the app.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enable-sending-sharing-videos-between-users-in-chats-including-upload-download-stream-playback-and-displaying-a-video-message-card-in-the-conversation",
+      "title": "Enable sending/sharing videos between users in chats, including upload, download/stream playback, and displaying a video message card in the conversation.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-video-rating-system-that-allows-users-to-rate-shared-videos-from-0-5-stars-to-5-stars-in-0-5-increments-and-display-the-aggregate-rating-for-each-video",
+      "title": "Add a video rating system that allows users to rate shared videos from 0.5 stars to 5 stars in 0.5 increments, and display the aggregate rating for each video.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-customizable-menu-for-theme-colors-allowing-users-to-pick-and-persist-primary-secondary-background-colors-or-a-small-set-of-curated-themes-and-apply-the-selection-across-the-app-ui",
+      "title": "Add a customizable menu for theme colors, allowing users to pick and persist primary/secondary/background colors (or a small set of curated themes) and apply the selection across the app UI.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-and-apply-a-coherent-visual-theme-for-the-app-typography-spacing-component-styling-and-layout-that-fits-a-modern-communications-product-avoid-blue-purple-as-the-primary-palette",
+      "title": "Create and apply a coherent visual theme for the app (typography, spacing, component styling, and layout) that fits a modern communications product; avoid blue/purple as the primary palette.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-mock-current-user-behavior-with-real-canister-backed-profile-fetching-and-ensure-onboarding-sets-the-initial-username-and-display-name-with-a-reasonable-default-display-name-if-the-user-does-not-choose-one",
+      "title": "Replace mock current-user behavior with real canister-backed profile fetching and ensure onboarding sets the initial username and display name (with a reasonable default display name if the user does not choose one).",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-ui-in-settings-to-edit-and-save-display-name-and-username-and-update-the-app-header-and-profile-related-screens-to-display-both-display-name-and-username-consistently",
+      "title": "Add UI in Settings to edit and save display name and username, and update the app header and profile-related screens to display both display name and username consistently.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-directory-search-to-use-real-canister-backed-user-search-by-username-and-optionally-display-name-instead-of-mock-data",
+      "title": "Update directory search to use real canister-backed user search by username (and optionally display name) instead of mock data.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-hardcoded-mock-conversations-list-with-a-real-persistent-conversations-source-so-that-conversations-the-user-never-started-do-not-appear-by-default",
+      "title": "Replace the hardcoded mock conversations list with a real, persistent conversations source so that conversations the user never started do not appear by default.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-user-action-in-the-chats-ui-to-remove-a-conversation-the-user-never-started-and-ensure-it-stays-removed-after-reload-persisted-server-side-for-that-user",
+      "title": "Implement a user action in the Chats UI to remove a conversation the user never started, and ensure it stays removed after reload (persisted server-side for that user).",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-conversation-thread-page-header-to-display-the-actual-other-participant-derived-from-the-conversation-data-instead-of-a-hardcoded-handle-to-avoid-misleading-threads-when-mock-data-is-removed",
+      "title": "Update the conversation thread page header to display the actual other participant (derived from the conversation data) instead of a hardcoded handle, to avoid misleading threads when mock data is removed.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-canister-backed-per-user-call-history-so-the-calls-page-no-longer-shows-hardcoded-mock-calls-and-users-only-see-call-log-entries-that-belong-to-them",
+      "title": "Implement a canister-backed, per-user call history so the Calls page no longer shows hardcoded/mock calls and users only see call log entries that belong to them.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-user-action-on-the-calls-page-to-delete-erase-individual-call-history-entries-and-persist-the-deletion-so-erased-calls-do-not-reappear-after-refresh",
+      "title": "Add a user action on the Calls page to delete (erase) individual call history entries, and persist the deletion so erased calls do not reappear after refresh.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-expand-the-available-color-theme-options-by-adding-more-curated-theme-presets-to-the-existing-theme-system-and-ensure-selecting-a-preset-updates-the-app-s-css-variables-consistently",
+      "title": "Expand the available color theme options by adding more curated theme presets to the existing theme system, and ensure selecting a preset updates the app’s CSS variables consistently.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-chat-thread-s-mock-message-list-with-real-canister-backed-messages-so-the-thread-never-shows-hardcoded-phantom-messages-e-g-the-sample-messages-from-alice-if-there-are-no-messages-for-a-conversation-show-an-empty-state-instead-of-seeded-content",
+      "title": "Replace the chat thread’s mock message list with real canister-backed messages so the thread never shows hardcoded/phantom messages (e.g., the sample messages from “@alice”). If there are no messages for a conversation, show an empty state instead of seeded content.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-sender-name-shown-above-incoming-messages-in-a-chat-thread-so-it-uses-the-actual-other-participant-s-username-display-name-derived-from-the-conversation-profile-data-and-never-shows-a-hardcoded-name-like-alice",
+      "title": "Fix the sender name shown above incoming messages in a chat thread so it uses the actual other participant’s username/display name (derived from the conversation + profile data) and never shows a hardcoded name like “Alice”.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-make-the-chat-thread-message-area-scrollable-up-and-down-and-keep-expected-chat-behavior-auto-scroll-to-the-bottom-when-the-user-is-already-near-the-bottom-and-a-new-message-arrives-but-do-not-force-scroll-if-the-user-has-manually-scrolled-up-to-read-older-messages",
+      "title": "Make the chat thread message area scrollable up and down, and keep expected chat behavior: auto-scroll to the bottom when the user is already near the bottom and a new message arrives, but do not force-scroll if the user has manually scrolled up to read older messages.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-extend-backend-canister-apis-and-storage-to-support-persistent-1-1-conversation-messages-send-list-by-conversation-keyed-so-only-conversation-participants-can-read-write-and-update-the-frontend-message-send-fetch-hooks-to-use-these-apis-polling-is-fine-no-websockets",
+      "title": "Add/extend backend canister APIs and storage to support persistent 1:1 conversation messages (send + list by conversation), keyed so only conversation participants can read/write, and update the frontend message send/fetch hooks to use these APIs (polling is fine; no WebSockets).",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Implement user-to-user messaging (chat) functionality",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Implement calling between users (voice/video calling)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Add in-app video creation and editing tools",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Enable sending/sharing videos between users",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Add video rating system allowing 0.5 to 5 stars",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add customizable menu and theme color customization",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Allow users to customize their display name and username (profile/handle management)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Implement persistent user profile data in the Motoko canister, including a unique username (handle) and a user-editable display name, keyed by the authenticated caller principal.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Add canister APIs to create and update username and display name with validation and username uniqueness enforcement.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Add notifications (e.g., for new messages/calls/updates)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Add canister support for listing a user’s conversations and determining which conversations were initiated by the current user (the user has sent at least one message in that conversation).",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Allow users to erase/remove call entries for calls they did not make, and ensure call history is accurate and persisted per user",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Expand theme customization by adding more theme color options/curated themes",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Communication app with messaging, calling, video sharing/editing, ratings, and theme customization",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

@@ -1,0 +1,91 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-07T04:04:23.881Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 4,
+    "implemented": 4,
+    "items": [
+      {
+        "id": "REQ-21",
+        "summary": "Replace the chat thread’s mock message list with real canister-backed messages so the thread never shows hardcoded/phantom messages (e.g., the sample messages from “@alice”). If there are no messages for a conversation, show an empty state instead of seeded content.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useThreadMessages.ts",
+          "frontend/src/pages/ChatThreadPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useThreadMessages.ts",
+          "frontend/src/pages/ChatThreadPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-22",
+        "summary": "Fix the sender name shown above incoming messages in a chat thread so it uses the actual other participant’s username/display name (derived from the conversation + profile data) and never shows a hardcoded name like “Alice”.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ChatThreadPage.tsx",
+          "frontend/src/components/chat/MessageList.tsx",
+          "frontend/src/utils/conversationMeta.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ChatThreadPage.tsx",
+          "frontend/src/components/chat/MessageList.tsx",
+          "frontend/src/utils/conversationMeta.ts"
+        ]
+      },
+      {
+        "id": "REQ-23",
+        "summary": "Make the chat thread message area scrollable up and down, and keep expected chat behavior: auto-scroll to the bottom when the user is already near the bottom and a new message arrives, but do not force-scroll if the user has manually scrolled up to read older messages.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ChatThreadPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ChatThreadPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-24",
+        "summary": "Add/extend backend canister APIs and storage to support persistent 1:1 conversation messages (send + list by conversation), keyed so only conversation participants can read/write, and update the frontend message send/fetch hooks to use these APIs (polling is fine; no WebSockets).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useSendMessage.ts",
+          "frontend/src/hooks/useThreadMessages.ts",
+          "frontend/src/hooks/useConversations.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useSendMessage.ts",
+          "frontend/src/hooks/useThreadMessages.ts"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/chat/MessageList.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useSendMessage.ts",
+    "frontend/src/hooks/useThreadMessages.ts",
+    "frontend/src/hooks/useUserSearch.ts",
+    "frontend/src/pages/ChatThreadPage.tsx",
+    "frontend/src/pages/DirectoryPage.tsx",
+    "frontend/src/pages/UserProfilePage.tsx",
+    "frontend/src/utils/conversationMeta.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}
